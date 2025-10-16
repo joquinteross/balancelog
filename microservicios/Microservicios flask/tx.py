@@ -11,6 +11,7 @@ coleccion = base_datos["transacciones"]
 
 #Compatibilidad con mongo
 def convertir_a_json(doc):
+    """Convierte el _id de Mongo a string y lo renombra a 'id'."""
     doc["id"] = str(doc["_id"])
     del doc["_id"]
     return doc
