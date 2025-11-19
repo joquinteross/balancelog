@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsuariosGatewayController;
 use App\Http\Controllers\TransaccionesGatewayController;
+use App\Http\Controllers\PresupuestosGatewayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,3 +36,9 @@ Route::put('/transacciones/{id}', [TransaccionesGatewayController::class, 'actua
 Route::delete('/transacciones/{id}', [TransaccionesGatewayController::class, 'eliminar']);
 Route::get('/transacciones/resumen/{user_id}/{mes}', [TransaccionesGatewayController::class, 'resumenMensual']);
 
+
+#Ruta del microservicio de ppto
+
+Route::post('/presupuesto', [PresupuestosGatewayController::class, 'crear']);
+Route::get('/presupuesto/{user_id}', [PresupuestosGatewayController::class, 'ver']);
+Route::put('/presupuesto/{user_id}', [PresupuestosGatewayController::class, 'actualizar']);
