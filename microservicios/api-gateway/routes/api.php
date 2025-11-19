@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsuariosGatewayController;
 use App\Http\Controllers\TransaccionesGatewayController;
 use App\Http\Controllers\PresupuestosGatewayController;
+use App\Http\Controllers\NotificacionesGatewayController;
+use App\Http\Controllers\ReportesGatewayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,3 +48,9 @@ Route::put('/presupuesto/{user_id}', [PresupuestosGatewayController::class, 'act
 #Ruta del microservicio de noti
 
 Route::get('/notificaciones/{user_id}/{mes}', [NotificacionesGatewayController::class, 'estado']);
+
+
+#Ruta del microservicio de reportes
+
+Route::get('/reportes/{user_id}/{mes}/pdf', [ReportesGatewayController::class, 'pdf']);
+Route::get('/reportes/{user_id}/{mes}/excel', [ReportesGatewayController::class, 'excel']);
