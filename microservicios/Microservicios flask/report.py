@@ -11,6 +11,7 @@ app = Flask(__name__)
 API_KEY = "OnceCaldasQuerido"
 
 #Verificamos que la request que recibimos sea realizada con el header de la API key que tenemos, para validar qu solo la api key obtenga una respuesta
+@app.before_request
 def verificar():
     api_key = request.headers.get('X-API-KEY')
     if api_key != API_KEY:
