@@ -29,9 +29,11 @@ def indice():
 #Gera PDF
 @app.route("/reportes/<user_id>/<mes>/pdf", methods=["GET"])
 def reporte_pdf(user_id, mes):
+    
+    headers = {"X-API-KEY": API_KEY}
  #Pedimos informacion de presupuesto y transacciones
-    r_p = requests.get(f"{PRESUPUESTOS_URL}/presupuesto/{user_id}")
-    r_t = requests.get(f"{TRANSACCIONES_URL}/transacciones/resumen/{user_id}/{mes}")
+    r_p = requests.get(f"{PRESUPUESTOS_URL}/presupuesto/{user_id}", headers=headers)
+    r_t = requests.get(f"{TRANSACCIONES_URL}/transacciones/resumen/{user_id}/{mes}",headers=headers)
 
     if r_p.status_code != 200 or r_t.status_code != 200:
         return jsonify({"mensaje": "Error consultando servicios"}), 502
@@ -70,8 +72,10 @@ def reporte_pdf(user_id, mes):
 #Genracion del Excel
 @app.route("/reportes/<user_id>/<mes>/excel", methods=["GET"])
 def reporte_excel(user_id, mes):
-    r_p = requests.get(f"{PRESUPUESTOS_URL}/presupuesto/{user_id}")
-    r_t = requests.get(f"{TRANSACCIONES_URL}/transacciones/resumen/{user_id}/{mes}")
+    
+    headers = {"X-API-KEY": API_KEY}
+    r_p = requests.get(f"{PRESUPUESTOS_URL}/presupuesto/{user_id}", headers = {"X-API-KEY": API_KEY})
+    r_t = requests.get(f"{TRANSACCIONES_URL}/transacciones/resumen/{user_id}/{mes}",headers = {"X-API-KEY": API_KEY})
 
     if r_p.status_code != 200 or r_t.status_code != 200:
         return jsonify({"mensaje": "Error consultando servicios"}), 502
