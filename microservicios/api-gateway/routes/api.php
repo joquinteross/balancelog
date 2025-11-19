@@ -42,3 +42,7 @@ Route::get('/transacciones/resumen/{user_id}/{mes}', [TransaccionesGatewayContro
 Route::post('/presupuesto', [PresupuestosGatewayController::class, 'crear']);
 Route::get('/presupuesto/{user_id}', [PresupuestosGatewayController::class, 'ver']);
 Route::put('/presupuesto/{user_id}', [PresupuestosGatewayController::class, 'actualizar']);
+
+#Ruta del microservicio de noti
+
+Route::get('/notificaciones/{user_id}/{mes}', [NotificacionesGatewayController::class, 'estado']);
