@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_file
+from flask import Flask, jsonify, send_file, request
 import requests, io
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import LETTER
@@ -6,6 +6,15 @@ import pandas as pd
 from datetime import datetime
 
 app = Flask(__name__)
+
+
+API_KEY = "OnceCaldasQuerido"
+
+#Verificamos que la request que recibimos sea realizada con el header de la API key que tenemos, para validar qu solo la api key obtenga una respuesta
+def verificar():
+    api_key = request.headers.get('X-API-KEY')
+    if api_key != API_KEY:
+        return jsonify({"error": "No tienes permiso"}), 401
 
 # URLs de los otros microservicios
 PRESUPUESTOS_URL = "http://localhost:5001"

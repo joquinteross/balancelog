@@ -4,6 +4,14 @@ from bson import ObjectId
 
 app = Flask(__name__)
 
+API_KEY = "OnceCaldasQuerido"
+
+#Verificamos que la request que recibimos sea realizada con el header de la API key que tenemos, para validar qu solo la api key obtenga una respuesta
+def verificar():
+    api_key = request.headers.get('X-API-KEY')
+    if api_key != API_KEY:
+        return jsonify({"error": "No tienes permiso"}), 401
+
 #Conexion a Mongo
 cliente_mongo = MongoClient("mongodb://localhost:27017/")
 base_datos = cliente_mongo["ppto"]
