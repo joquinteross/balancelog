@@ -15,14 +15,17 @@ use App\Http\Controllers\UserController;
 |
 */
 
+Route::middleware('internal.api')->group(function () {
+    Route::post('/register', [UserController::class,'create_user']);
+    Route::post('/login', [UserController::class,'login']);
 
-Route::post('/register', [UserController::class,'create_user']);
-Route::post('/login', [UserController::class,'login']);
-Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::post('/logout', [UserController::class,'logout']);
-    Route::post('/password', [UserController::class,'change_password']);
-    Route::get('/me', [UserController::class, 'me']);
-});
+
+    Route::group(['middleware' => 'auth:sanctum'], function () {
+        Route::post('/logout', [UserController::class,'logout']);
+        Route::post('/password', [UserController::class,'change_password']);
+        Route::get('/me', [UserController::class, 'me']);
+    });
+});    
 
 
 
