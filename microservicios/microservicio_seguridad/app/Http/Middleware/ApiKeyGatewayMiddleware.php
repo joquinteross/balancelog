@@ -18,7 +18,7 @@ class ApiKeyGatewayMiddleware
     {
 
         $apiKey = $request->header('X-API-KEY');
-        $expected = env('MS_INTERNAL_API_KEY');
+        $expected = env('API_KEY');
 
         if (!$apiKey || $apiKey !== $expected) {
             return response()->json(['error' => 'Sin permiso de acceder'], 401);

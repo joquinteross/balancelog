@@ -72,6 +72,13 @@ class UsuariosGatewayController extends Controller
     #test me
     public function me(Request $request)
     {
+
+        $token = $request->bearerToken();
+
+        
+        if (!$token) {
+            return response()->json(['message' => 'No esta autenticado'], 401);
+        }
         $url = $this->baseUrl . '/api/me';
 
         $response = Http::withHeaders([

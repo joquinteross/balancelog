@@ -15,7 +15,7 @@ use App\Http\Controllers\UserController;
 |
 */
 
-Route::middleware('internal.api')->group(function () {
+Route::middleware('api')->group(function () {
     Route::post('/register', [UserController::class,'create_user']);
     Route::post('/login', [UserController::class,'login']);
 
