@@ -1,7 +1,11 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from bson import ObjectId
+import os
 
+
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongo:27017/")
+MONGO_DB = os.getenv("MONGO_DB", "ppto")
 app = Flask(__name__)
 
 API_KEY = "OnceCaldasQuerido"
@@ -15,8 +19,8 @@ def verificar():
         return jsonify({"error": "No tienes permiso"}), 401
 
 #Conexion a Mongo
-cliente_mongo = MongoClient("mongodb://localhost:27017/")
-base_datos = cliente_mongo["ppto"]
+cliente_mongo = MongoClient(MONGO_URI)
+base_datos = cliente_mongo[MONGO_DB]
 coleccion = base_datos["presupuestos"]
 
 #Compatibilidad con mongo

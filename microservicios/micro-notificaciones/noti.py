@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 import requests
-
+import os
 app = Flask(__name__)
 
 API_KEY = "OnceCaldasQuerido"
@@ -13,9 +13,8 @@ def verificar():
         return jsonify({"error": "No tienes permiso"}), 401
 
 # Endpoints de microservicios a conectar (directo, no por gateway)
-presupuestos_url = "http://localhost:5001"
-transacciones_url = "http://localhost:5000"
-
+presupuestos_url = os.getenv("PRESUPUESTOS_URL", "http://micro-presupuestos:5001")
+transacciones_url = os.getenv("TRANSACCIONES_URL", "http://micro-transacciones:5000")
 alerta = 0.8
 
 @app.route("/")

@@ -4,6 +4,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import LETTER
 import pandas as pd
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
@@ -18,8 +19,8 @@ def verificar():
         return jsonify({"error": "No tienes permiso"}), 401
 
 # URLs de los otros microservicios
-PRESUPUESTOS_URL = "http://localhost:5001"
-TRANSACCIONES_URL = "http://localhost:5000"
+presupuestos_url = os.getenv("PRESUPUESTOS_URL", "http://micro-presupuestos:5001")
+transacciones_url = os.getenv("TRANSACCIONES_URL", "http://micro-transacciones:5000")
 
 @app.route("/")
 def indice():
