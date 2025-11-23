@@ -10,6 +10,11 @@ app = Flask(__name__)
 
 API_KEY = "OnceCaldasQuerido"
 
+
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({"status": "ok"}), 200
+    
 #Verificamos que la request que recibimos sea realizada con el header de la API key que tenemos, para validar qu solo la api key obtenga una respuesta
 @app.before_request
 def verificar():

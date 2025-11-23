@@ -6,6 +6,13 @@ app = Flask(__name__)
 
 API_KEY = "OnceCaldasQuerido"
 
+
+
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({"status": "ok"}), 200
+
+
 # Verificamos API KEY de quien llama a notificaciones (gateway)
 @app.before_request
 def verificar():

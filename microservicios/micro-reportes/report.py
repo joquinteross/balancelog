@@ -10,6 +10,14 @@ app = Flask(__name__)
 
 API_KEY = "OnceCaldasQuerido"
 
+
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({"status": "ok"}), 200
+
+
+
+
 @app.before_request
 def verificar():
     api_key = request.headers.get('X-API-KEY')
