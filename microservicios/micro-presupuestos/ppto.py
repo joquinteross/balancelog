@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from bson import ObjectId
+from pymongo.errors import ConnectionFailure
+import time
 import os
 
 

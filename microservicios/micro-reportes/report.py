@@ -8,10 +8,8 @@ import os
 
 app = Flask(__name__)
 
-
 API_KEY = "OnceCaldasQuerido"
 
-#Verificamos que la request que recibimos sea realizada con el header de la API key que tenemos, para validar qu solo la api key obtenga una respuesta
 @app.before_request
 def verificar():
     api_key = request.headers.get('X-API-KEY')
@@ -26,15 +24,13 @@ transacciones_url = os.getenv("TRANSACCIONES_URL", "http://micro-transacciones:5
 def indice():
     return "ON FUNCIONANDO"
 
-
-#Gera PDF
 @app.route("/reportes/<user_id>/<mes>/pdf", methods=["GET"])
 def reporte_pdf(user_id, mes):
-    
+
     headers = {"X-API-KEY": API_KEY}
- #Pedimos informacion de presupuesto y transacciones
-    r_p = requests.get(f"{PRESUPUESTOS_URL}/presupuesto/{user_id}", headers=headers)
-    r_t = requests.get(f"{TRANSACCIONES_URL}/transacciones/resumen/{user_id}/{mes}",headers=headers)
+
+    r_p = requests.get(f"{presupuestos_url}/presupuesto/{user_id}", headers=headers)
+    r_t = requests.get(f"{transacciones_url}/transacciones/resumen/{user_id}/{mes}", headers=headers)
 
     if r_p.status_code != 200 or r_t.status_code != 200:
         return jsonify({"mensaje": "Error consultando servicios"}), 502
@@ -46,7 +42,6 @@ def reporte_pdf(user_id, mes):
     limite = ppto.get("gasto", 0)
     gastos = resumen.get("total_gastos", 0)
 
-#Creacion del PDF
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=LETTER)
     c.setFont("Helvetica-Bold", 16)
@@ -68,15 +63,13 @@ def reporte_pdf(user_id, mes):
                      download_name=f"reporte_{user_id}_{mes}.pdf",
                      mimetype="application/pdf")
 
-
-
-#Genracion del Excel
 @app.route("/reportes/<user_id>/<mes>/excel", methods=["GET"])
 def reporte_excel(user_id, mes):
-    
+
     headers = {"X-API-KEY": API_KEY}
-    r_p = requests.get(f"{PRESUPUESTOS_URL}/presupuesto/{user_id}", headers = {"X-API-KEY": API_KEY})
-    r_t = requests.get(f"{TRANSACCIONES_URL}/transacciones/resumen/{user_id}/{mes}",headers = {"X-API-KEY": API_KEY})
+
+    r_p = requests.get(f"{presupuestos_url}/presupuesto/{user_id}", headers=headers)
+    r_t = requests.get(f"{transacciones_url}/transacciones/resumen/{user_id}/{mes}", headers=headers)
 
     if r_p.status_code != 200 or r_t.status_code != 200:
         return jsonify({"mensaje": "Error consultando servicios"}), 502
@@ -88,7 +81,6 @@ def reporte_excel(user_id, mes):
     limite = ppto.get("gasto", 0)
     gastos = resumen.get("total_gastos", 0)
 
-
     datos = [{
         "Usuario": user_id,
         "Mes": mes,
@@ -96,14 +88,14 @@ def reporte_excel(user_id, mes):
         "Límite de gasto": limite,
         "Gastos del mes": gastos
     }]
+    
     df = pd.DataFrame(datos)
-
 
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="Resumen")
-    output.seek(0)
 
+    output.seek(0)
     return send_file(output, as_attachment=True,
                      download_name=f"reporte_{user_id}_{mes}.xlsx",
                      mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
