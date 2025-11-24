@@ -15,6 +15,11 @@ use App\Http\Controllers\UserController;
 |
 */
 
+
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok'], 200);
+});
+
 Route::middleware('api')->group(function () {
     Route::post('/register', [UserController::class,'create_user']);
     Route::post('/login', [UserController::class,'login']);

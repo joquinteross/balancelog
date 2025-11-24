@@ -1,7 +1,5 @@
-version: "3.9"
-
 services:
-  # 🗄️ MongoDB
+  #  MongoDB
   mongo:
     image: mongo:6
     container_name: mongo
@@ -9,7 +7,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./data/mongo:/data/db        # ⬅️ Datos de Mongo en ./data/mongo
+      - ./data/mongo:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
@@ -21,7 +19,7 @@ services:
     networks:
       - backend
 
-  # 🗄️ MySQL
+  # MySQL
   mysql:
     image: mysql:8.0
     container_name: mysql
@@ -32,7 +30,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./data/mysql:/var/lib/mysql     # ⬅️ Datos de MySQL en ./data/mysql
+      - ./data/mysql:/var/lib/mysql
       - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -p${MYSQL_ROOT_PASSWORD} || exit 1"]
@@ -42,7 +40,7 @@ services:
     networks:
       - backend
 
-  # 🟦 micro-presupuestos (Flask)
+  # micro-presupuestos (Flask)
   micro-presupuestos:
     build:
       context: ./micro-presupuestos
@@ -59,14 +57,15 @@ services:
       mongo:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${PPTO_PORT}/ || exit 1"]
+      # /health NO requiere API KEY
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${PPTO_PORT}/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - backend
 
-  # 🟪 micro-transacciones (Flask)
+  # micro-transacciones (Flask)
   micro-transacciones:
     build:
       context: ./micro-transacciones
@@ -83,14 +82,14 @@ services:
       mongo:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${TX_PORT}/ || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${TX_PORT}/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - backend
 
-  # 🟩 micro-notificaciones (Flask)
+  #  micro-notificaciones (Flask)
   micro-notificaciones:
     build:
       context: ./micro-notificaciones
@@ -110,14 +109,14 @@ services:
       micro-transacciones:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${NOTI_PORT}/ || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${NOTI_PORT}/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - backend
 
-  # 🟧 micro-reportes (Flask)
+  #  micro-reportes (Flask)
   micro-reportes:
     build:
       context: ./micro-reportes
@@ -136,18 +135,17 @@ services:
       micro-transacciones:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${REPORT_PORT}/ || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${REPORT_PORT}/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - backend
 
-  # 🟥 microservicio_seguridad (Laravel)
+  #  microservicio_seguridad (Laravel)
   microservicio-seguridad:
     build:
       context: ./microservicio_seguridad
-      dockerfile: Dockerfile
     container_name: microservicio-seguridad
     restart: unless-stopped
     environment:
@@ -165,21 +163,20 @@ services:
       mysql:
         condition: service_healthy
     ports:
-      - "8000:8000"   # Para probar directo el micro de seguridad
+      - "8000:8000"
     healthcheck:
-      # Simple: intentamos cargar la home; si falla -> unhealthy
-      test: ["CMD-SHELL", "php -r 'file_get_contents(\"http://localhost:8000\");' || exit 1"]
+      # Usa la ruta /api/health que agregaste en routes/api.php
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/api/health || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 5
     networks:
       - backend
 
-  # 🟦 api-gateway (Laravel)
+  #  api-gateway (Laravel)
   api-gateway:
     build:
       context: ./api-gateway
-      dockerfile: Dockerfile
     container_name: api-gateway
     restart: unless-stopped
     environment:
@@ -188,14 +185,12 @@ services:
       APP_URL: http://api-gateway:${GATEWAY_PORT}
       API_KEY: ${API_KEY}
 
-      # URLs internas de los microservicios
       TRANSACCIONES_URL: http://micro-transacciones:${TX_PORT}
       PRESUPUESTOS_URL: http://micro-presupuestos:${PPTO_PORT}
       NOTIFICACIONES_URL: http://micro-notificaciones:${NOTI_PORT}
       REPORTES_URL: http://micro-reportes:${REPORT_PORT}
       USUARIOS_URL: http://microservicio-seguridad:${SEGURIDAD_PORT}
 
-      # DB del gateway (si la usas)
       DB_CONNECTION: mysql
       DB_HOST: ${MYSQL_HOST}
       DB_PORT: ${MYSQL_PORT}
@@ -214,9 +209,10 @@ services:
       microservicio-seguridad:
         condition: service_healthy
     ports:
-      - "8001:8001"   # Punto de entrada externo
+      - "8001:8001"
     healthcheck:
-      test: ["CMD-SHELL", "php -r 'file_get_contents(\"http://localhost:8001\");' || exit 1"]
+      # Laravel en el gateway responde en la raíz
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8001/ || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -225,3 +221,4 @@ services:
 
 networks:
   backend:
+    driver: bridge

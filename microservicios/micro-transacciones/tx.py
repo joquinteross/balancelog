@@ -11,13 +11,18 @@ app = Flask(__name__)
 API_KEY = "OnceCaldasQuerido"
 
 
+# HEALTHCHECK SIN API KEY
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({"status": "ok"}), 200
-    
-#Verificamos que la request que recibimos sea realizada con el header de la API key que tenemos, para validar qu solo la api key obtenga una respuesta
+
+
+# Middleware → EXCEPCIÓN para /health
 @app.before_request
 def verificar():
+    if request.path == "/health":
+        return
+
     api_key = request.headers.get('X-API-KEY')
     if api_key != API_KEY:
         return jsonify({"error": "No tienes permiso"}), 401

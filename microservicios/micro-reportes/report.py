@@ -11,18 +11,23 @@ app = Flask(__name__)
 API_KEY = "OnceCaldasQuerido"
 
 
+# HEALTHCHECK SIN API KEY
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({"status": "ok"}), 200
 
 
-
-
+# Middleware → EXCEPCIÓN para /health
 @app.before_request
 def verificar():
+    if request.path == "/health":
+        return
+
     api_key = request.headers.get('X-API-KEY')
     if api_key != API_KEY:
         return jsonify({"error": "No tienes permiso"}), 401
+
+
 
 # URLs de los otros microservicios
 presupuestos_url = os.getenv("PRESUPUESTOS_URL", "http://micro-presupuestos:5001")
