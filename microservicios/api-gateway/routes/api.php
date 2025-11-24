@@ -19,6 +19,10 @@ use App\Http\Controllers\ReportesGatewayController;
 |
 */
 
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok'], 200);
+});
+
 #Ruta del microservicio de usuarios
 
 

@@ -1,5 +1,5 @@
 services:
-  #  MongoDB
+  # 🗄️ MongoDB
   mongo:
     image: mongo:6
     container_name: mongo
@@ -212,7 +212,7 @@ services:
       - "8001:8001"
     healthcheck:
       # Laravel en el gateway responde en la raíz
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8001/ || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8001/api/health || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 5
